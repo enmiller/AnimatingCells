@@ -44,7 +44,7 @@ class AnimatingMenuView: UIView {
      than 1.0 will implicitly reset the value back to 1.0. A value less
      than 0.0, the value will be reset to 0.0.
      */
-    @IBInspectable var dismissInitialVelocity: CGFloat = 0.5
+    @IBInspectable var dismissInitialVelocity: CGFloat = 0.6
     
     public override init(frame: CGRect) {
         tableView = UITableView(frame: frame)

@@ -15,6 +15,7 @@ protocol AnimatingMenuViewControllerDelegate: class {
 class AnimatingMenuViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
     weak var delegate: AnimatingMenuViewControllerDelegate?
+    fileprivate var manuallyInitialized: Bool = false
     
     var strings: [String]? {
         didSet {
@@ -23,19 +24,48 @@ class AnimatingMenuViewController: UIViewController, UITableViewDataSource, UITa
             }
         }
     }
+    
+    convenience init() {
+        self.init(nibName: nil, bundle: nil)
+        self.manuallyInitialized = true
+        self.modalTransitionStyle = .crossDissolve
+        self.modalPresentationStyle = .overCurrentContext
+    }
+    
+    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+    }
 
     override func loadView() {
-        let aView = AnimatingMenuView()
-        aView.tableView.dataSource = self
-        aView.tableView.delegate = self
-        self.view = aView
+        if manuallyInitialized {
+            let aView = AnimatingMenuView()
+            aView.tableView.dataSource = self
+            aView.tableView.delegate = self
+            self.view = aView
+        } else {
+            super.loadView()
+        }
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        animatingView().configureTableView()
+        if manuallyInitialized {
+            // For this example, the menu table view is the full frame of the screen
+            let screenFrame = UIScreen.main.bounds
+            let tableFrame = CGRect(
+                x: 0.0,
+                y: topLayoutGuide.length,
+                width: screenFrame.width,
+                height: screenFrame.height
+            )
+            animatingView().refineTableViewLayout(with: tableFrame)
+        }
     }
-
+    
     fileprivate func animatingView() -> AnimatingMenuView {
         return viewIfLoaded as! AnimatingMenuView
     }

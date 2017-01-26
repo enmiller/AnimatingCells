@@ -8,36 +8,61 @@
 
 import UIKit
 
-// Not optimized for storyboard usage.
 class AnimatingMenuView: UIView {
     
-    private(set) var tableView: UITableView
+    @IBOutlet private(set) var tableView: UITableView!
+    @IBInspectable var backgroundFadeDuration: Double = 0.2
+    @IBInspectable var animationDelayBetweenCells: Double = 0.15
+    
+    @IBInspectable var animationPresentationDuration: Double = 0.4
+    /**
+     - Note: Setting this property to a value greater
+     than 1.0 will implicitly reset the value back to 1.0. A value less 
+     than 0.0, the value will be reset to 0.0.
+     */
+    @IBInspectable var presentationSpringDamping: CGFloat = 0.6
+    
+    /**
+     - Note: Setting this property to a value greater
+     than 1.0 will implicitly reset the value back to 1.0. A value less
+     than 0.0, the value will be reset to 0.0.
+     */
+    @IBInspectable var presentationInitialVelocity: CGFloat = 0.4
+    
+    @IBInspectable var animationDismissDuration: Double = 0.2
+    /**
+     - Note: Setting this property to a value greater
+     than 1.0 will implicitly reset the value back to 1.0. A value less
+     than 0.0, the value will be reset to 0.0.
+     */
+    @IBInspectable var dismissSpringDamping: CGFloat = 1.0
+    
+    /**
+     - Note: Setting this property to a value greater
+     than 1.0 will implicitly reset the value back to 1.0. A value less
+     than 0.0, the value will be reset to 0.0.
+     */
+    @IBInspectable var dismissInitialVelocity: CGFloat = 0.5
     
     public override init(frame: CGRect) {
-        tableView = UITableView()
+        tableView = UITableView(frame: frame)
         super.init(frame: frame)
-        commonInit()
+        self.backgroundColor = UIColor.clear
+        
+        configureTableView()
     }
     
     required public init?(coder aDecoder: NSCoder) {
-        tableView = UITableView()
         super.init(coder: aDecoder)
-        commonInit()
-    }
-    
-    fileprivate func commonInit() {
-        self.backgroundColor = UIColor.clear
-        
-        tableView.backgroundColor = UIColor.black.withAlphaComponent(0.2)
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cellID")
-        tableView.alpha = 0.0
-        addSubview(tableView)
     }
     
     // MARK: - Actions
-    func configureTableView() {
-        // Would not be needed in a storyboard.
-        tableView.frame = self.bounds
+    func refineTableViewLayout(with frame: CGRect? = nil) {
+        if let frame = frame {
+            tableView.frame = frame
+        } else {
+            tableView.frame = self.bounds
+        }
     }
     
     func presentMenu(animated: Bool, completion: ((Bool) -> Void)? = nil) {
@@ -55,11 +80,10 @@ class AnimatingMenuView: UIView {
                 cell.frame = offscreenFrame
             }
             UIView.animate(
-                withDuration: 0.2,
+                withDuration: backgroundFadeDuration,
                 animations: {
                     self.tableView.alpha = 1.0
             }, completion: { (completed) in
-                let delay: TimeInterval = 0.15
                 let dGroup = DispatchGroup()
                 for (index, cell) in visibleCells.enumerated() {
                     let newFrame = CGRect(
@@ -70,10 +94,10 @@ class AnimatingMenuView: UIView {
                     )
                     dGroup.enter()
                     UIView.animate(
-                        withDuration: 0.4,
-                        delay: (delay * Double(index)),
-                        usingSpringWithDamping: 0.6,
-                        initialSpringVelocity: 0.4,
+                        withDuration: self.animationPresentationDuration,
+                        delay: (self.animationDelayBetweenCells * Double(index)),
+                        usingSpringWithDamping: self.presentationSpringDamping,
+                        initialSpringVelocity: self.presentationInitialVelocity,
                         options: [],
                         animations: {
                             cell.frame = newFrame
@@ -92,7 +116,6 @@ class AnimatingMenuView: UIView {
     
     func dismissMenu(animated: Bool, completion: ((Bool) -> Void)? = nil) {
         if animated {
-            let delay: TimeInterval = 0.15
             let visibleCells = tableView.visibleCells
             let dGroup = DispatchGroup()
             for (index, cell) in visibleCells.enumerated() {
@@ -104,10 +127,10 @@ class AnimatingMenuView: UIView {
                 )
                 dGroup.enter()
                 UIView.animate(
-                    withDuration: 0.25,
-                    delay: (delay * Double(index)),
-                    usingSpringWithDamping: 1.0,
-                    initialSpringVelocity: 0.5,
+                    withDuration: animationDismissDuration,
+                    delay: (animationDelayBetweenCells * Double(index)),
+                    usingSpringWithDamping: dismissSpringDamping,
+                    initialSpringVelocity: dismissInitialVelocity,
                     options: [],
                     animations: {
                         cell.frame = offscreenFrame
@@ -118,7 +141,7 @@ class AnimatingMenuView: UIView {
             
             dGroup.notify(queue: DispatchQueue.main) {
                 UIView.animate(
-                    withDuration: 0.2,
+                    withDuration: self.backgroundFadeDuration,
                     delay: 0.0,
                     options: [],
                     animations: {
@@ -128,5 +151,13 @@ class AnimatingMenuView: UIView {
                 })
             }
         }
+    }
+    
+    // MARK: - Private
+    fileprivate func configureTableView() {
+        tableView.backgroundColor = UIColor.black.withAlphaComponent(0.2)
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cellID")
+        tableView.alpha = 0.0
+        addSubview(tableView)
     }
 }

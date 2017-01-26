@@ -9,16 +9,25 @@
 import UIKit
 
 class ViewController: UIViewController, AnimatingMenuViewControllerDelegate {
-
-    @IBAction func presentMenu(_ sender: UIButton) {
-        let animatingMenuController = AnimatingMenuViewController()
-        animatingMenuController.delegate = self
-        animatingMenuController.modalTransitionStyle = .crossDissolve
-        animatingMenuController.modalPresentationStyle = .overCurrentContext
-        
-        animatingMenuController.strings = ["First", "Second", "Third", "Fourth"]
-        
-        present(animatingMenuController, animated: false, completion: nil)
+    
+    enum SegueConstants: String {
+        case showMenu
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        guard let identifier = segue.identifier else {
+            preconditionFailure("Unrecognized segue identifier")
+        }
+        if let menuSegue = SegueConstants(rawValue: identifier) {
+            let destination = segue.destination
+            switch menuSegue {
+            case .showMenu:
+                if let animatingMenuController = destination as? AnimatingMenuViewController {
+                    animatingMenuController.delegate = self
+                    animatingMenuController.strings = ["Presenting", "Menu", "With", "Segue"]
+                }
+            }
+        }
     }
     
     // MARK: - AnimatingMenuViewControllerDelegate

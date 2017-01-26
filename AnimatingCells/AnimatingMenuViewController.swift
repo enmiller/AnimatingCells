@@ -108,4 +108,8 @@ class AnimatingMenuViewController: UIViewController, UITableViewDataSource, UITa
     public func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
         return 1.0
     }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 56.0
+    }
 }

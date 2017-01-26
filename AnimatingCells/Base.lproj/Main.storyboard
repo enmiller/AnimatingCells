@@ -140,7 +140,7 @@
                         </constraints>
                         <userDefinedRuntimeAttributes>
                             <userDefinedRuntimeAttribute type="number" keyPath="animationDelayBetweenCells">
-                                <real key="value" value="0.14999999999999999"/>
+                                <real key="value" value="0.10000000000000001"/>
                             </userDefinedRuntimeAttribute>
                             <userDefinedRuntimeAttribute type="number" keyPath="animationPresentationDuration">
                                 <real key="value" value="0.40000000000000002"/>

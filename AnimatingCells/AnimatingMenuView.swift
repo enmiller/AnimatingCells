@@ -12,8 +12,9 @@ class AnimatingMenuView: UIView {
     
     @IBOutlet private(set) var tableView: UITableView!
     @IBInspectable var backgroundFadeDuration: Double = 0.2
-    @IBInspectable var animationDelayBetweenCells: Double = 0.15
+    @IBInspectable var animationDelayBetweenCells: Double = 0.1
     
+    // Presentation
     @IBInspectable var animationPresentationDuration: Double = 0.4
     /**
      - Note: Setting this property to a value greater
@@ -29,6 +30,7 @@ class AnimatingMenuView: UIView {
      */
     @IBInspectable var presentationInitialVelocity: CGFloat = 0.4
     
+    // Dismiss
     @IBInspectable var animationDismissDuration: Double = 0.2
     /**
      - Note: Setting this property to a value greater
